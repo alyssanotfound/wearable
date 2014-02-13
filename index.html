@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>LED SHIRT</title>
+<link rel="stylesheet" href="shirtstyle.css">
+<script type="text/javascript" src="resource/underscore-min.js"></script>
+</head>
+<body>
+<div id="container">
+<div id="centeredheader">
+<input type="text" id="mytext">
+<button onclick="getPixelData()">PIXEL DATA</button>
+</div>
+<div id="centered">
+<canvas id="e" width="600" height="100"></canvas>
+</div>
+</div>
+</body>
+<script>
+  var canvas = document.getElementById("e");
+  var context = canvas.getContext("2d");
+  context.fillStyle="white";
+  context.fillRect(0,0,600,100);
+  context.fillStyle = "black";
+  context.font = "bold 100px Helvetica";
+  var usertext = document.getElementById("mytext").value;
+  // context.fillText(usertext, 100, 100);
+
+
+/* setupUpdater will be called once, on page load.
+ */
+ 
+function setupUpdater(){
+ var input=document.getElementById('mytext')
+   , oldText=input.value
+   , timeout=null;
+ 
+	/* handleChange is called 50ms after the user stops 
+	   typing. */
+	 function handleChange(){
+	  var newText=input.value;
+	  if (newText==oldText) return; else oldText=newText;
+	  console.log(newText);
+	  context.clearRect(0,0,600,100);
+	  context.fillStyle="white";
+  	  context.fillRect(0,0,600,100);
+  	  context.fillStyle = "black";
+	  context.fillText(newText, 0, 75);
+	 }
+ 
+	/* eventHandler is called on keyboard and mouse events.
+	   If there is a pending timeout, it cancels it.
+	   It sets a timeout to call handleChange in 50ms. */
+	 function eventHandler(){
+	  if(timeout) clearTimeout(timeout);
+	  timeout=setTimeout(handleChange, 50);
+	 }
+ 
+ input.onkeydown=input.onkeyup=input.onclick=eventHandler;
+}
+ 
+setupUpdater();
+document.getElementById('mytext').focus();
+var tempListOfBlackPixels;
+var listOfBlackPixelsByColumn;
+
+
+function getPixelData(){
+	listOfBlackPixelsByColumn = [];
+	for(var c=0, m = 100; c < m; c += 1 ){
+	convertPixelToLedByColumn(c); 
+	}
+	//returns a multidimensional array of arrays
+	//each of which reps the positions
+	//in a column of the black pixels
+	console.log("the black pixels are here " + listOfBlackPixelsByColumn);
+	
+}
+
+function convertPixelToLedByColumn(c){
+	tempListOfBlackPixels = [];
+	var imgData=context.getImageData(c,0,1,100);
+
+	console.log(imgData);
+	for(var p=0, n = imgData.data.length; p < n; p += 4 ) {
+		red=imgData.data[p];
+		green=imgData.data[p+1];
+		blue=imgData.data[p+2];
+
+		console.log(p + " " + red + " " + green + " " + blue);
+		if (red == 0 && green == 0 && blue == 0){
+			//the pixel is black
+			//divide by 4 (for the 4 values per pixel) * 20 to go from range of 100 pixels to range of 5 leds
+			tempListOfBlackPixels += Math.round(p/80) ;
+		} else {
+			//the pixel isn't black
+		}
+	}
+	tempListOfBlackPixels = _.uniq(tempListOfBlackPixels);
+	//add the column of leds to master list
+	listOfBlackPixelsByColumn.push(tempListOfBlackPixels);
+}
+
+
+
+
+
+
+
+
+
+</script>

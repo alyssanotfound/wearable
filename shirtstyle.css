@@ -1,0 +1,19 @@
+
+#centered {
+width: 600px;
+padding: 20px;
+margin: 0 auto;
+background-color: #FFFFFF;
+border:25px solid #F8F8F8;
+}
+
+#centeredheader {
+width: 300px;
+margin: 0 auto;
+padding: 20px;
+}
+
+input {
+	margin: 10px;
+}
+
