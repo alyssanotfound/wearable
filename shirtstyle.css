@@ -17,3 +17,11 @@ input {
 	margin: 10px;
 }
 
+p {
+width: 600px;
+height: 300px;
+margin: 0 auto;
+padding: 20px;
+word-break: break-all;
+
+}

@@ -15,6 +15,7 @@
 <canvas id="e" width="600" height="100"></canvas>
 </div>
 </div>
+<p id="display">Column data: </p>
 </body>
 <script>
   var canvas = document.getElementById("e");
@@ -61,6 +62,7 @@ function setupUpdater(){
  
 setupUpdater();
 document.getElementById('mytext').focus();
+var displaytxt = document.getElementById('display');
 var tempListOfBlackPixels;
 var listOfBlackPixelsByColumn;
 
@@ -74,6 +76,7 @@ function getPixelData(){
 	//each of which reps the positions
 	//in a column of the black pixels
 	console.log("the black pixels are here " + listOfBlackPixelsByColumn);
+	displaytxt.innerHTML += listOfBlackPixelsByColumn;
 	
 }
 
