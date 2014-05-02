@@ -12,24 +12,33 @@
 <button onclick="getPixelData()">PIXEL DATA</button>
 </div>
 <div id="centered">
-<canvas id="e" width="600" height="100"></canvas>
+<canvas id="e" width="50" height="100"></canvas>
 </div>
 </div>
-<p id="display">Column data: </p>
+<p id="display">COLUMN DATA </p>
 </body>
 <script>
   var canvas = document.getElementById("e");
   var context = canvas.getContext("2d");
+  var cHeight = 100;
+  var cWidth = 600;
   context.fillStyle="white";
-  context.fillRect(0,0,600,100);
+  context.fillRect(0,0,cWidth,cHeight);
   context.fillStyle = "black";
   context.font = "bold 100px Helvetica";
   var usertext = document.getElementById("mytext").value;
-  // context.fillText(usertext, 100, 100);
+  document.getElementById('mytext').focus();
+  var displaytxt = document.getElementById('display');
+  var tempListOfBlackPixels;
+  var tempListOfBinary;
+  var listOfBlackPixelsByColumn;
+  //if you change NumLeds then update tempListOfBinary with the right number of 0s
+  var NumLeds = 32;
 
 
 /* setupUpdater will be called once, on page load.
  */
+ setupUpdater();
  
 function setupUpdater(){
  var input=document.getElementById('mytext')
@@ -42,9 +51,9 @@ function setupUpdater(){
 	  var newText=input.value;
 	  if (newText==oldText) return; else oldText=newText;
 	  console.log(newText);
-	  context.clearRect(0,0,600,100);
+	  context.clearRect(0,0,cWidth,cHeight);
 	  context.fillStyle="white";
-  	  context.fillRect(0,0,600,100);
+  	  context.fillRect(0,0,cWidth,cHeight);
   	  context.fillStyle = "black";
 	  context.fillText(newText, 0, 75);
 	 }
@@ -60,16 +69,11 @@ function setupUpdater(){
  input.onkeydown=input.onkeyup=input.onclick=eventHandler;
 }
  
-setupUpdater();
-document.getElementById('mytext').focus();
-var displaytxt = document.getElementById('display');
-var tempListOfBlackPixels;
-var listOfBlackPixelsByColumn;
-
 
 function getPixelData(){
+	displaytxt.innerHTML = [];
 	listOfBlackPixelsByColumn = [];
-	for(var c=0, m = 100; c < m; c += 1 ){
+	for(var c=0, m = cWidth; c < m; c += 1 ){
 	convertPixelToLedByColumn(c); 
 	}
 	//returns a multidimensional array of arrays
@@ -82,7 +86,7 @@ function getPixelData(){
 
 function convertPixelToLedByColumn(c){
 	tempListOfBlackPixels = [];
-	var imgData=context.getImageData(c,0,1,100);
+	var imgData=context.getImageData(c,0,1,cHeight);
 
 	console.log(imgData);
 	for(var p=0, n = imgData.data.length; p < n; p += 4 ) {
@@ -90,20 +94,40 @@ function convertPixelToLedByColumn(c){
 		green=imgData.data[p+1];
 		blue=imgData.data[p+2];
 
-		console.log(p + " " + red + " " + green + " " + blue);
+		console.log(p/4 + " " + red + " " + green + " " + blue); //p/4 gives the pixel number in that column
 		if (red == 0 && green == 0 && blue == 0){
 			//the pixel is black
 			//divide by 4 (for the 4 values per pixel) * 20 to go from range of 100 pixels to range of 5 leds
-			tempListOfBlackPixels += Math.round(p/80) ;
+			console.log( (p/4)*(NumLeds/cHeight) );
+			tempListOfBlackPixels.push( Math.round( (p/4)*(NumLeds/cHeight)  ) );
 		} else {
 			//the pixel isn't black
 		}
 	}
-	tempListOfBlackPixels = _.uniq(tempListOfBlackPixels);
+	tempListOfBlackPixels = _.uniq(tempListOfBlackPixels);	
+	console.log( tempListOfBlackPixels);
+	tempListOfBlackPixels = convertPixelNumsToBinary(tempListOfBlackPixels);
 	//add the column of leds to master list
 	listOfBlackPixelsByColumn.push(tempListOfBlackPixels);
 }
 
+function convertPixelNumsToBinary(d){
+	console.log(d);
+	tempListOfBinary = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+	//loop thru ea element in d check if 0-4 and change appropriate value in tempListOfBinary
+	for (var i=0; i < NumLeds; i++){
+		for (var j=0; j < NumLeds; j++){
+			if (d[i] == j){
+				tempListOfBinary[j] = 0; //make it 0 because that pixel should light up and the leds light on 0
+			} 
+		}
+	}
+
+	//console.log(tempListOfBinary);
+	tempListOfBinary = "{" + tempListOfBinary.toString() + "}";
+	//console.log(tempListOfBinary);
+	return tempListOfBinary;
+}
 
 
 
