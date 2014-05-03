@@ -31,17 +31,26 @@ void runCurl() {
   
   while (p.available()>0) {
     char c = p.read();
-    //Serial.print(c);
+    Serial.print(c);
     bufferdata += c;
-//    if (c == '*'){
-//      break;
-//    }
+    if (c == '*'){
+      goThruBuffer(bufferdata);
+      bufferdata = "";
+    }
   }
   
-  Serial.println();
-  
-  Serial.print(" buffer: ");
-  Serial.print( bufferdata );
-  Serial.flush();
-  
+//  Serial.println();
+//  Serial.print(" buffer: ");
+//  Serial.print( bufferdata );
+//  Serial.flush();
 }
+
+void goThruBuffer(String currentBlock ){
+  Serial.println();
+  Serial.print(" buffer: ");
+  Serial.print( currentBlock );
+  Serial.flush();
+}
+
+
+
